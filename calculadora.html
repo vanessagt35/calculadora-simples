@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    .calculator {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 6rem 4rem repeat(5, 1fr);
+      gap: 0.5rem;
+      width: 25rem;
+      padding: 1rem;
+      border: 2px solid black;
+      border-radius: 10px;
+      background-color: #f0f0f0;
+    }
+
+    .display {
+      grid-column: 1 / span 4;
+      grid-row: 1 / span 2;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0.5rem;
+      font-size: 2rem;
+      background-color: white;
+      border: 1px solid black;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .expression {
+      font-size: 1.5rem;
+      color: gray;
+    }
+
+    .result {
+      font-weight: bold;
+    }
+
+    .button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      background-color: #333333;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #555555;
+    }
+
+    .button:active {
+      background-color: #777777;
+    }
+
+    .button-clear {
+      grid-column: 1 / span 3;
+      background-color: #ff0000;
+    }
+
+    .button-clear:hover {
+      background-color: #ff3333;
+    }
+
+    .button-clear:active {
+      background-color: #ff6666;
+    }
+
+    .button-equal {
+      grid-row: 4 / span 3;
+      background-color: #00ff00;
+    }
+
+    .button-equal:hover {
+      background-color: #33ff33;
+    }
+
+    .button-equal:active {
+      background-color: #66ff66;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="calculator">
+      <div class="display">
+        <div class="expression"></div>
+        <div class="result">0</div>
+      </div>
+      <button class="button button-clear" id="clear">C</button>
+      <button class="button button-divide" id="divide">/</button>
+      <button class="button button-multiply" id="multiply">*</button>
+      <button class="button button-subtract" id="subtract">-</button>
+      <button class="button button-add" id="add">+</button>
+      <button class="button button-equal" id="equal">=</button>
+      <button class="button button-7" id="7">7</button>
+      <button class="button button-8" id="8">8</button>
+      <button class="button button-9" id="9">9</button>
+      <button class="button button-4" id="4">4</button>
+      <button class="button button-5" id="5">5</button>
+      <button class="button button-6" id="6">6</button>
+      <button class="button button-1" id="1">1</button>
+      <button class="button button-2" id="2">2</button>
+      <button class="button button-3" id="3">3</button>
+      <button class="button button-0" id="0">0</button>
+      <button class="button button-dot" id="dot">.</button>
+    </div>
+  </div>
+  <script>
+    // Selecionar os elementos do HTML
+    const expression = document.querySelector(".expression");
+    const result = document.querySelector(".result");
+    const clear = document.querySelector("#clear");
+    const divide = document.querySelector("#divide");
+    const multiply = document.querySelector("#multiply");
+    const subtract = document.querySelector("#subtract");
+    const add = document.querySelector("#add");
+    const equal = document.querySelector("#equal");
+    const dot = document.querySelector("#dot");
+    const numbers = document.querySelectorAll(".button-0, .button-1, .button-2, .button-3, .button-4, .button-5, .button-6, .button-7, .button-8, .button-9");
+
+    // Criar variáveis para armazenar os valores e o operador
+    let value1 = "";
+    let value2 = "";
+    let operator = "";
+
+    // Criar uma função para limpar os valores e o operador
+    function clearAll() {
+      value1 = "";
+      value2 = "";
+      operator = "";
+      expression.textContent = "";
+      result.textContent = "0";
+    }
+
+    // Criar uma função para atualizar o display com os valores e o operador
+    function updateDisplay() {
+      expression.textContent = value1 + operator + value2;
+      if (value1 && value2 && operator) {
+        result.textContent = calculate();
+      }
+    }
+
+    // Criar uma função para calcular o resultado da operação
+    function calculate() {
+      let num1 = parseFloat(value1);
+      let num2 = parseFloat(value2);
+      let res = 0;
+      switch (operator) {
+        case "+":
+          res = num1 + num2;
+          break;
+        case "-":
+          res = num1 - num2;
+          break;
+        case "*":
+          res = num1 * num2;
+          break;
+        case "/":
+          res = num1 / num2;
+          break;
+      }
+      return res.toFixed(2);
+    }
+
+    // Criar uma função para mostrar o resultado e a sobra da divisão, se houver
+    function showResult() {
+      if (value1 && value2 && operator) {
+        let res = calculate();
+        let mod = parseFloat(value1) % parseFloat(value2);
+        result.textContent = res;
+        if (operator === "/" && mod !== 0) {
+          result.textContent += " (sobra " + mod.toFixed(2) + ")";
+        }
+      }
+    }
+
+    // Adicionar um evento de clique para o botão de limpar
+    clear.addEventListener("click", clearAll);
+
+    // Adicionar um evento de clique para os botões de números
+    numbers.forEach((number) => {
+      number.addEventListener("click", () => {
+        if (!operator) {
+          value1 += number.textContent;
+        } else {
+          value2 += number.textContent;
+        }
+        updateDisplay();
+      });
+    });
+
+    // Adicionar um evento de clique para o botão de ponto
+    dot.addEventListener("click", () => {
+      if (!operator) {
+        if (!value1.includes(".")) {
+          value1 += dot.textContent;
+        }
+      } else {
+        if (!value2.includes(".")) {
+          value2 += dot.textContent;
+        }
+      }
+      updateDisplay();
+    });
+
+    // Adicionar um evento de clique para os botões de operadores
+    [divide, multiply, subtract, add].forEach((op) => {
+      op.addEventListener("click", () => {
+        if (value1 && !operator) {
+          operator = op.textContent;
+          updateDisplay();
+        }
+      });
+    });
+
+    // Adicionar um evento de clique para o botão de igual
+    equal.addEventListener("click", showResult);
+  </script>
+</body>
+</html>
